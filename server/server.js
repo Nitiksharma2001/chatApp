@@ -10,7 +10,7 @@ app.use(cors());
 // socket io server formation
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:13741",
+    origin: "http://localhost:6866",
     methods: ["GET", "POST"],
   },
 });
@@ -19,9 +19,15 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("user connected ", socket.id);
 
+  // if user joins the room
   socket.on("join_room", (room) => {
     socket.join(room);
     console.log("user with id", socket.id, "connected to room", room)
+  });
+
+  // if user sends a message
+  socket.on("send_message", (data) => {
+    socket.to(data.room).emit("receive_message", data);
   });
 
   // if user disconnects in frontendss
